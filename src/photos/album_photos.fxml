@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="photos.controller.AlbumPhotosController"
+            style="-fx-padding: 10;">
+    <top>
+        <Label fx:id="albumLabel"
+               text="Album Photos"
+               style="-fx-font-size: 18px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER" />
+    </top>
+
+    <left>
+        <VBox spacing="5" BorderPane.alignment="CENTER_LEFT">
+            <children>
+                <Label text="Photos:" />
+                <ListView fx:id="photoListView"
+                          prefWidth="220.0"
+                          prefHeight="300.0" />
+            </children>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="8" BorderPane.alignment="CENTER">
+            <children>
+                <ImageView fx:id="imageView"
+                           fitWidth="350.0"
+                           fitHeight="260.0"
+                           preserveRatio="true"
+                           smooth="true" />
+                <Label fx:id="dateLabel"
+                       text="Date: -"
+                       style="-fx-font-size: 12px;" />
+                <TextField fx:id="captionField"
+                           promptText="Caption for selected photo" />
+            </children>
+        </VBox>
+    </center>
+
+    <right>
+        <VBox spacing="6" BorderPane.alignment="CENTER_RIGHT">
+            <children>
+                <Label text="Tags:" />
+                <ListView fx:id="tagListView"
+                          prefWidth="200.0"
+                          prefHeight="200.0" />
+
+                <TextField fx:id="tagNameField"
+                           promptText="Tag name (e.g. person)" />
+                <TextField fx:id="tagValueField"
+                           promptText="Tag value (e.g. Alice)" />
+
+                <HBox spacing="6">
+                    <children>
+                        <Button text="Add Tag" onAction="#handleAddTag" />
+                        <Button text="Delete Tag" onAction="#handleDeleteTag" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </right>
+
+    <bottom>
+        <VBox spacing="8" BorderPane.alignment="CENTER">
+            <children>
+                <!-- Photo management + slideshow -->
+                <HBox spacing="10">
+                    <children>
+                        <Button text="Add Photo" onAction="#handleAddPhoto" />
+                        <Button text="Remove Photo" onAction="#handleRemovePhoto" />
+                        <Button text="Save Caption" onAction="#handleSaveCaption" />
+                        <Button text="Prev" onAction="#handlePrevPhoto" />
+                        <Button text="Next" onAction="#handleNextPhoto" />
+                    </children>
+                </HBox>
+
+                <!-- Copy/move + back -->
+                <HBox spacing="10">
+                    <children>
+                        <Button text="Copy to Album..." onAction="#handleCopyPhoto" />
+                        <Button text="Move to Album..." onAction="#handleMovePhoto" />
+                        <Button text="Back to Albums" onAction="#handleBack" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </bottom>
+</BorderPane>

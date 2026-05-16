@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.fxml.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="photos.controller.SearchController"
+      spacing="10"
+      style="-fx-padding: 20;">
+
+    <!-- TITLE -->
+    <children>
+        <Label text="Search Photos"
+               style="-fx-font-size: 18px; -fx-font-weight: bold;" />
+
+        <!-- DATE RANGE SECTION -->
+        <Label text="Search by Date Range" style="-fx-font-weight: bold;" />
+        <HBox spacing="10">
+            <children>
+                <Label text="From:" />
+                <DatePicker fx:id="fromDatePicker" />
+                <Label text="To:" />
+                <DatePicker fx:id="toDatePicker" />
+                <Button text="Search by Date"
+                        onAction="#handleSearchByDate" />
+            </children>
+        </HBox>
+
+        <Separator />
+
+        <!-- TAG SEARCH SECTION -->
+        <Label text="Search by Tags" style="-fx-font-weight: bold;" />
+
+        <HBox spacing="10">
+            <children>
+                <Label text="Tag 1:" />
+                <TextField fx:id="tag1NameField" promptText="name (e.g. person)" />
+                <TextField fx:id="tag1ValueField" promptText="value (e.g. Alice)" />
+            </children>
+        </HBox>
+
+        <HBox spacing="10">
+            <children>
+                <Label text="Tag 2 (optional):" />
+                <TextField fx:id="tag2NameField" promptText="name (e.g. location)" />
+                <TextField fx:id="tag2ValueField" promptText="value (e.g. Paris)" />
+            </children>
+        </HBox>
+
+        <!-- Radio buttons for mode -->
+        <fx:define>
+            <ToggleGroup fx:id="tagModeGroup"/>
+        </fx:define>
+
+        <HBox spacing="10">
+            <children>
+                <Label text="Mode:" />
+                <RadioButton fx:id="rbSingle"
+                             text="Single (Tag 1 only)"
+                             toggleGroup="$tagModeGroup"
+                             selected="true" />
+                <RadioButton fx:id="rbAnd"
+                             text="Tag1 AND Tag2"
+                             toggleGroup="$tagModeGroup" />
+                <RadioButton fx:id="rbOr"
+                             text="Tag1 OR Tag2"
+                             toggleGroup="$tagModeGroup" />
+                <Button text="Search by Tag"
+                        onAction="#handleSearchByTag" />
+            </children>
+        </HBox>
+
+        <Separator />
+
+        <!-- RESULTS -->
+        <Label fx:id="infoLabel" text="No results yet." />
+
+        <ListView fx:id="resultsListView"
+                  prefHeight="220.0" />
+
+        <HBox spacing="10">
+            <children>
+                <Button text="Create Album from Results"
+                        onAction="#handleCreateAlbumFromResults" />
+                <Button text="Back to Albums"
+                        onAction="#handleBack" />
+            </children>
+        </HBox>
+    </children>
+</VBox>

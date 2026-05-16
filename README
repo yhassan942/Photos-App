@@ -1,0 +1,241 @@
+Photos81 – CS213 Assignment 3
+=============================
+Youssef Hassan (yhh10) & Srimaan Koneru (skk133)
+
+--------------------------------------------------
+1. Project Structure
+--------------------------------------------------
+
+Photos81/
+├─ src/
+│  └─ photos/
+│     ├─ Photos.java                (main JavaFX Application)
+│     ├─ controller/
+│     │  ├─ AdminController.java
+│     │  ├─ AlbumsController.java
+│     │  ├─ AlbumPhotosController.java
+│     │  ├─ LoginController.java
+│     │  └─ SearchController.java
+│     ├─ model/
+│     │  ├─ Album.java
+│     │  ├─ Photo.java
+│     │  ├─ Tag.java
+│     │  ├─ User.java
+│     │  └─ UserManager.java
+│     └─ view/ (if used)
+│        └─ *.fxml
+├─ data/
+│  ├─ stock_blue.png
+│  ├─ stock_cyan.png
+│  ├─ stock_gray.png
+│  ├─ stock_green.png
+│  ├─ stock_magenta.png
+│  ├─ stock_red.png
+│  └─ stock_yellow.png
+│  └─ users.dat (created at runtime, NOT in repo)
+├─ docs/
+│  └─ index.html                    (generated Javadoc entry page)
+├─ .gitignore
+└─ README.txt 
+
+Notes:
+- data/users.dat is created at runtime and contains serialized users, albums,
+  photos, and tags. It is not committed to the repository on purpose.
+
+--------------------------------------------------
+2. How to Run
+--------------------------------------------------
+
+1) Compile:
+
+   javac --module-path "PATH_TO_FX/lib" --add-modules javafx.controls,javafx.fxml \
+         -d bin $(find src -name "*.java")
+
+2) Run:
+
+   java --module-path "PATH_TO_FX/lib" --add-modules javafx.controls,javafx.fxml \
+        -cp bin photos.Photos
+
+Replace PATH_TO_FX with the actual JavaFX SDK location.
+
+--------------------------------------------------
+3. Users and Login
+--------------------------------------------------
+
+- Application uses username-only login (no passwords required).
+- Special users:
+  - admin  -> opens the admin subsystem.
+  - stock  -> internal user that owns the base stock album.
+- Any other username (e.g. user1, jo, etc.) opens the normal user subsystem.
+
+On first run, UserManager auto-creates:
+- admin user (no albums/photos).
+- stock user with album “stock” and the 7 stock color photos.
+- For every non-admin user, a “stock images” album populated with the same 7 stock photos.
+
+All data is serialized into data/users.dat on logout or app exit and reloaded on next launch.
+
+--------------------------------------------------
+4. Features Implemented
+--------------------------------------------------
+
+1. Date of Photo
+------------------
+
+- Each Photo stores a java.time.LocalDateTime captured from the file’s last
+  modification time.
+- This value is read-only in the UI and shown as “Date” when viewing a photo.
+- Date is used for:
+  - Display in the album photo view.
+  - Searching by date range.
+
+2. Tags
+---------
+
+- Each photo has a collection of Tag objects (name, value).
+- No duplicate (name, value) pairs are allowed on the same photo.
+- Tag examples:
+  - ("person", "Alice")
+  - ("location", "New Brunswick")
+- Tags can be:
+  - Added via text fields (tag name + tag value).
+  - Deleted via selection in the tag list.
+- Multiple values for the same tag name (e.g., multiple “person” tags)
+  are allowed as separate Tag objects.
+
+3. Stock Photos & User Photos
+-------------------------------
+
+- data/ contains 7 low-resolution stock images, each a solid color:
+  stock_red.png, stock_green.png, stock_blue.png, stock_yellow.png, etc.
+- UserManager:
+  - Ensures the stock user with album “stock” is always populated with these photos.
+  - Ensures each non-admin user has a “stock images” album that also contains
+    these photos.
+- User photos:
+  - Added via a FileChooser (BMP, GIF, JPEG, PNG).
+  - The actual image files remain anywhere on the user’s machine.
+  - The app stores only absolute file paths and metadata.
+  - Paths are serialized into users.dat but not committed to GitHub.
+
+4. Admin Subsystem
+--------------------
+
+Logging in as “admin” opens the admin screen:
+
+- List all usernames.
+- Create user:
+  - Enter username and click “Add”.
+  - UserManager.addUser ensures no duplicate usernames.
+  - Non-admin users automatically receive a “stock images” album.
+- Delete user:
+  - Select a username and click “Delete”.
+- Admin itself does not have albums or photos.
+- Logout returns to the login screen.
+
+5. Non-admin User Subsystem
+-----------------------------
+
+After logging in as a normal user:
+
+- All existing albums for that user are loaded from users.dat.
+- Initially displayed: Album list.
+
+Each album row shows:
+- Album name
+- Number of photos
+- Range of dates (earliest and latest photo date) for that album
+
+Album Operations (Albums screen):
+
+- Create album:
+  - Enter new name, click “Add”.
+  - Duplicate names are rejected per-user.
+- Delete album:
+  - Select and click “Delete”.
+- Rename album:
+  - Select album, enter new name, click “Rename”.
+- Open album:
+  - Opens the Album Photos screen for that album.
+- Search:
+  - Opens the Search screen.
+- Logout:
+  - Saves all data and returns to login.
+
+Photo Operations (Album Photos screen):
+
+- Left ListView:
+  - Shows each photo with thumbnail + caption.
+- Center display:
+  - Large image preview.
+  - Caption text field.
+  - Date label (LocalDateTime).
+- Right side:
+  - Tag list and tag add/delete controls.
+
+Supported actions:
+
+- Add photo:
+  - Uses FileChooser; prevents duplicate photo in the same album (same file path).
+- Remove photo:
+  - Removes from the current album only.
+- Caption / recaption:
+  - Edit caption and save.
+  - Caption is shared across all albums containing that photo.
+- Add tag / Delete tag:
+  - Adds/removes tags on the selected photo.
+  - Tag changes propagate to all albums containing that photo.
+- Manual slideshow:
+  - Prev and Next buttons step through photos in the album (wrap-around).
+- Copy photo:
+  - Prompts user for destination album name.
+  - Adds the same Photo object to the destination album.
+  - Edits to caption/tags are reflected in all albums.
+- Move photo:
+  - Same as copy, but also removes photo from the source album.
+
+Search (Search screen):
+
+1) Search by date range:
+   - Choose From and To dates using DatePickers.
+   - Shows all photos from all albums of the user whose date is in the range.
+
+2) Search by tag(s):
+   - Modes:
+     - Single: one tag (name, value), e.g. person = Alice.
+     - AND: intersection of two tag pairs, e.g. person=Alice AND location=New Brunswick.
+     - OR: union of two tag pairs, e.g. person=Alice OR person=Bob.
+   - Works correctly even when multiple values for the same tag name exist.
+
+3) Create album from search results:
+   - After a search, user can create an album containing all resulting photos.
+   - Photos are not duplicated on disk; album just stores references to existing Photo objects.
+
+
+--------------------------------------------------
+5. Error Handling
+--------------------------------------------------
+
+- The console is never used for user-facing messages.
+- All errors (invalid input, missing selection, I/O failures, etc.) are shown using
+  JavaFX Alert dialogs.
+
+Examples:
+- “Album name cannot be empty.”
+- “This photo is already in the album.”
+- “Album does not exist.”
+- “Select a photo/tag first.”
+
+--------------------------------------------------
+6. Javadoc
+--------------------------------------------------
+
+- Javadoc has been generated into the docs/ directory using:
+
+  javadoc -d docs -sourcepath src -subpackages photos
+
+- Open docs/index.html in a browser to view class and package documentation for:
+  - photos.*
+  - photos.controller.*
+  - photos.model.*
+
